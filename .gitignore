@@ -29,3 +29,6 @@ ui_mainwindow.h
 
 carparking.pro.user
 CLAUDE.md
+AGENTS.md
+.gitignore
+.github/skills/qt-manual-validation/SKILL.md
