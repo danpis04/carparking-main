@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <chrono>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QApplication>
 // log constant
 #define LOG_FREQ 1000000 // how many iterations between each log
 #define WHEEL_RADIUS 0.3
@@ -102,18 +105,22 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_playButton_clicked()
-{   
+{
     controller.lr = ui->learning_rate->value();
     controller.er = ui->epsilon->value();
     controller.er_max = ui->epsilon->value();
 
     timer->start();
 
+    ui->statusLabel->setText("Animation running. Use Pause to suspend, Stop to reset the car.");
+    statusBar()->showMessage("Animation running");
 }
 
 void MainWindow::on_pauseButton_clicked()
 {
     timer->stop();
+    ui->statusLabel->setText("Animation paused.");
+    statusBar()->showMessage("Animation paused");
 }
 
 void MainWindow::on_stopButton_clicked()
@@ -125,6 +132,8 @@ void MainWindow::on_stopButton_clicked()
     update();
     timer->stop();
 
+    ui->statusLabel->setText("Animation stopped. Car re-initialized to a random pose.");
+    statusBar()->showMessage("Animation stopped");
 }
 
 
@@ -282,42 +291,112 @@ void MainWindow::on_trainButton_clicked()
     controller.er = ui->epsilon->value();
     controller.er_max = ui->epsilon->value();
 
+    bool eval_mode = ui->eval->isChecked();
+    QString mode = eval_mode ? "Testing" : "Training";
+
+    ui->trainButton->setEnabled(false);
+    ui->trainButton->setText(mode + " in progress...");
+    ui->statusLabel->setText(mode + " in progress — UI will be unresponsive until it completes.");
+    statusBar()->showMessage(mode + " in progress...");
+    QApplication::processEvents();
+
     ofstream file("log/log12.txt");
     if (!file.is_open()) {
-        cerr << "Failed to open file: log/log0.txt" << endl;
+        cerr << "Failed to open file: log/log12.txt" << endl;
     }
 
     int num_iter = ui->num_iterations->value();
+    int total_hits = 0;
+    int total_successes = 0;
     for(int i=0; i<num_iter; ++i) {
         model_iteration();
         enviroment_iteration(animation_speed*msec*time_ratio);
         if((i+1)%LOG_FREQ==0) {
             cout << "{\"iteration\": \"" << i+1 << "\", \"hit\": \"" << hit_counter << "\", \"success\": \"" << success_counter << "\", \"success_ratio\": \""<< 100 * success_counter / (float)(success_counter+hit_counter) << '%' << "\", \"lr\": \""<< controller.lr << "\", \"er\": \"" << controller.er << "\", \"avg_tdr\": \"" << avg_tdr <<"\"}"<< endl;
             file << "{\"iteration\": \"" << i+1 << "\", \"hit\": \"" << hit_counter << "\", \"success\": \"" << success_counter << "\", \"success_ratio\": \""<< 100 * success_counter / (float)(success_counter+hit_counter) << '%' << "\", \"lr\": \""<< controller.lr << "\", \"er\": \"" << controller.er << "\", \"avg_tdr\": \"" << avg_tdr <<"\"}"<< endl;
+            total_hits += hit_counter;
+            total_successes += success_counter;
             hit_counter=0;
             success_counter=0;
             avg_tdr = 0;
             update();
         }
     }
-    
+    total_hits += hit_counter;
+    total_successes += success_counter;
+
     cout << "Trained "<< num_iter <<endl;
     file.close();
 
+    ui->trainButton->setEnabled(true);
+    ui->trainButton->setText("Run Train / Test");
+
+    int total_episodes = total_hits + total_successes;
+    float success_pct = total_episodes > 0
+        ? 100.0f * total_successes / total_episodes
+        : 0.0f;
+
+    QString summary = QString("%1 done.\n\n"
+                              "Iterations: %2\n"
+                              "Successful parks: %3\n"
+                              "Collisions: %4\n"
+                              "Success ratio: %5%\n\n"
+                              "Per-million-iteration stats logged to:\n"
+                              "  log/log12.txt   (JSON lines)\n"
+                              "  stdout.log      (mirror of stdout)\n"
+                              "Errors (if any) in stderr.log.")
+        .arg(mode)
+        .arg(num_iter)
+        .arg(total_successes)
+        .arg(total_hits)
+        .arg(QString::number(success_pct, 'f', 2));
+
+    ui->statusLabel->setText(mode + " done — see log/log12.txt for details.");
+    statusBar()->showMessage(mode + " done", 5000);
+
+    QMessageBox::information(this, mode + " complete", summary);
 }
 
 
 void MainWindow::on_resetButton_clicked() {
     controller.reset();
     cout << "Q-Table reset" << endl;
+    ui->statusLabel->setText("Q-Table reset to random values.");
+    statusBar()->showMessage("Q-Table reset", 4000);
 }
 
 void MainWindow::on_qtable_load_sp_clicked()
 {
-    controller.loadWeights(ui->file_name->text().toStdString());
+    std::string fname = ui->file_name->text().toStdString();
+    if (fname.empty()) {
+        ui->statusLabel->setText("Load failed: file name is empty.");
+        statusBar()->showMessage("Load failed: empty file name", 4000);
+        return;
+    }
+    bool ok = controller.loadWeights(fname);
+    if (ok) {
+        ui->statusLabel->setText(QString("Q-Table loaded from parameters/%1").arg(QString::fromStdString(fname)));
+        statusBar()->showMessage("Q-Table loaded", 4000);
+    } else {
+        ui->statusLabel->setText(QString("Failed to load parameters/%1 (see stderr.log).").arg(QString::fromStdString(fname)));
+        statusBar()->showMessage("Load failed", 4000);
+    }
 }
 
 void MainWindow::on_qtable_store_sp_clicked()
 {
-    controller.storeWeights(ui->file_name->text().toStdString());
+    std::string fname = ui->file_name->text().toStdString();
+    if (fname.empty()) {
+        ui->statusLabel->setText("Store failed: file name is empty.");
+        statusBar()->showMessage("Store failed: empty file name", 4000);
+        return;
+    }
+    bool ok = controller.storeWeights(fname);
+    if (ok) {
+        ui->statusLabel->setText(QString("Q-Table stored to parameters/%1").arg(QString::fromStdString(fname)));
+        statusBar()->showMessage("Q-Table stored", 4000);
+    } else {
+        ui->statusLabel->setText(QString("Failed to store parameters/%1 (does the directory exist? see stderr.log).").arg(QString::fromStdString(fname)));
+        statusBar()->showMessage("Store failed", 4000);
+    }
 }
