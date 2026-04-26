@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./bin/carparking.exe)",
+      "Bash(echo \"exit code: $?\")",
+      "Bash(echo \"exit=$?\")",
+      "Bash(rm -f stdout.txt stderr.txt)",
+      "Bash(where gdb *)",
+      "Bash(gdb --version)",
+      "Bash(gdb -batch -ex run -ex \"bt 30\" -ex \"info locals\" ./bin/carparking.exe)",
+      "Bash(gdb --batch --ex \"run\" --ex \"bt 20\" --args ./bin/carparking.exe)"
+    ]
+  }
+}
