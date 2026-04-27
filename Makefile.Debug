@@ -946,7 +946,8 @@ build/mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractspinbox.h \
 		C:/Qt/6.11.0/mingw_64/include/QtGui/qvalidator.h \
 		C:/Qt/6.11.0/mingw_64/include/QtCore/qregularexpression.h \
-		C:/Qt/6.11.0/mingw_64/include/QtWidgets/QFrame \
+		C:/Qt/6.11.0/mingw_64/include/QtWidgets/QGroupBox \
+		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qgroupbox.h \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/QLabel \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qlabel.h \
@@ -967,7 +968,8 @@ build/mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/QMessageBox \
 		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qmessagebox.h \
-		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h
+		C:/Qt/6.11.0/mingw_64/include/QtWidgets/qdialogbuttonbox.h \
+		C:/Qt/6.11.0/mingw_64/include/QtGui/QResizeEvent
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build\mainwindow.o src\mainwindow.cpp
 
 build/q_learning.o: src/q_learning.cpp src/q_learning.h

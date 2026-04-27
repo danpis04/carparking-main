@@ -1,31 +1,3 @@
 3763200
 1
 1
-Q-Table reset
-Trained 1000
-Trained 1000
-Trained 10000
-Trained 10000
-Trained 10000
-Trained 10000
-Trained 10000
-Trained 100000
-Trained 100000
-Trained 100000
-Trained 100000
-Trained 100000
-Trained 100000
-{"iteration": "1000000", "hit": "63848", "success": "6", "success_ratio": "0.00939644%", "lr": "0.87068", "er": "0.353583", "avg_tdr": "0.141437"}
-{"iteration": "2000000", "hit": "34148", "success": "98", "success_ratio": "0.286165%", "lr": "0.7581", "er": "0.25005", "avg_tdr": "0.349826"}
-{"iteration": "3000000", "hit": "23054", "success": "7742", "success_ratio": "25.1396%", "lr": "0.660094", "er": "0.176841", "avg_tdr": "6.43791"}
-{"iteration": "4000000", "hit": "7245", "success": "26145", "success_ratio": "78.3019%", "lr": "0.574775", "er": "0.125075", "avg_tdr": "10.0417"}
-{"iteration": "5000000", "hit": "3857", "success": "34856", "success_ratio": "90.0369%", "lr": "0.5005", "er": "0.0884707", "avg_tdr": "151.036"}
-{"iteration": "6000000", "hit": "2637", "success": "39793", "success_ratio": "93.7851%", "lr": "0.43584", "er": "0.0625875", "avg_tdr": "7.65973"}
-{"iteration": "7000000", "hit": "1869", "success": "42553", "success_ratio": "95.7926%", "lr": "0.37955", "er": "0.0442853", "avg_tdr": "150.559"}
-{"iteration": "8000000", "hit": "1567", "success": "45066", "success_ratio": "96.6397%", "lr": "0.330547", "er": "0.0313438", "avg_tdr": "63.8757"}
-{"iteration": "9000000", "hit": "951", "success": "47405", "success_ratio": "98.0333%", "lr": "0.287887", "er": "0.0221927", "avg_tdr": "5.70432"}
-{"iteration": "10000000", "hit": "646", "success": "48607", "success_ratio": "98.6884%", "lr": "0.25075", "er": "0.0157219", "avg_tdr": "2.07393"}
-Trained 10000000
-Trained 1000
-Trained 1000
-q_table stored in funziona!

@@ -3,7 +3,11 @@
 #include <chrono>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QMenuBar>
 #include <QApplication>
+#include <QGroupBox>
+#include <QResizeEvent>
+#include <algorithm>
 // log constant
 #define LOG_FREQ 1000000 // how many iterations between each log
 #define WHEEL_RADIUS 0.3
@@ -95,8 +99,9 @@ MainWindow::MainWindow(QWidget *parent):
     car_picture = map_into_window(env.car_polygon(), m, r);
     env_picture = map_into_window(env.env_polygon, m, r);
 
-
-
+    // Anchor right-panel group boxes to the right edge for the initial layout —
+    // resize() above may not fire resizeEvent if size matches the .ui geometry.
+    layoutControls();
 }
 
 MainWindow::~MainWindow()
@@ -137,33 +142,101 @@ void MainWindow::on_stopButton_clicked()
 }
 
 
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);
+    layoutControls();
+}
+
+void MainWindow::layoutControls()
+{
+    if (!ui || !ui->qtableGroup) return;
+
+    int W = centralWidget()->width();
+    int H = centralWidget()->height();
+
+    const int rightW = 440;
+    const int rightMargin = 10;
+    int panelX = std::max(200, W - rightW - rightMargin);
+
+    QList<QGroupBox*> groups = {
+        ui->hyperGroup, ui->trainGroup, ui->animGroup, ui->qtableGroup
+    };
+    for (auto *g : groups) {
+        QRect r = g->geometry();
+        g->setGeometry(panelX, r.y(), rightW, r.height());
+    }
+
+    int statusH = 50;
+    int statusW = std::max(150, panelX - 20);
+    int statusY = std::max(0, H - statusH - 10);
+    ui->statusLabel->setGeometry(10, statusY, statusW, statusH);
+}
+
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QMainWindow::paintEvent(event);
     QPainter painter(this);
-    painter.setBrush(Qt::black);
-    painter.drawPolygon(env_picture);
-    painter.setBrush(Qt::blue); 
-    int m = stoi(conf["MARGIN"]);
-    int r = stoi(conf["PIXEL_RATIO"]);
+    painter.setRenderHint(QPainter::Antialiasing, true);
 
+    // ----- Compute the available drawing rectangle in window coords -----
+    int top = menuBar() ? menuBar()->height() : 0;
+    int bottomReserved = (statusBar() ? statusBar()->height() : 0) + 60; // status label + gap
+    int rightPanelLeft = std::max(200, width() - 440 - 10);
+
+    int avail_x = 0;
+    int avail_y = top + 5;
+    int avail_w = std::max(50, rightPanelLeft - 10 - avail_x);
+    int avail_h = std::max(50, height() - bottomReserved - avail_y);
+
+    // ----- Fit env (width_env x len_env) into available area, preserving aspect -----
+    const int min_pad = 8;
+    int r_x = (avail_w - 2*min_pad) / std::max(1, (int)env.width_env);
+    int r_y = (avail_h - 2*min_pad) / std::max(1, (int)env.len_env);
+    int r = std::min(r_x, r_y);
+    if (r < 5) r = 5;
+
+    int draw_w = (int)(r * env.width_env);
+    int draw_h = (int)(r * env.len_env);
+    int m_x = avail_x + (avail_w - draw_w) / 2;
+    int m_y = avail_y + (avail_h - draw_h) / 2;
+
+    // map_into_window already adds an offset; pass m=0 and translate the painter
+    const int m = 0;
+    painter.save();
+    painter.translate(m_x, m_y);
+
+    // ----- Lot polygon (black fill, blue boundary) -----
+    {
+        QPen lotPen(Qt::blue);
+        lotPen.setWidth(3);
+        painter.setPen(lotPen);
+    }
+    painter.setBrush(Qt::black);
+    painter.drawPolygon(map_into_window(env.env_polygon, m, r));
+
+    // ----- Car body (red) -----
+    painter.setPen(Qt::black);
+    painter.setBrush(Qt::red);
     car_picture = map_into_window(env.car_polygon(), m, r);
     painter.drawPolygon(car_picture);
 
-    painter.setBrush(Qt::red); // Set car_picture color
+    // ----- Centre and rear-axle dots (yellow, contrasts against red car) -----
+    painter.setBrush(Qt::yellow);
+    painter.setPen(Qt::yellow);
     painter.drawEllipse(map_into_window(QPointF(env.car.x, env.car.y), m, r), 2, 2);
+
     float sin_t = sin(env.car.theta);
     float cos_t = cos(env.car.theta);
-
     float xR = env.car.x - (0.5*env.len_car-env.rear_overhang)*cos_t;
     float yR = env.car.y - (0.5*env.len_car-env.rear_overhang)*sin_t;
     painter.drawEllipse(map_into_window(QPointF(xR, yR), m, r), 2, 2);
-    
-    if(SHOW_WHEEL) {
-        QPen pen(Qt::green);      
-        pen.setWidth(3);         
-        
-        painter.setPen(pen);       
+
+    if (SHOW_WHEEL) {
+        QPen pen(Qt::green);
+        pen.setWidth(3);
+        painter.setPen(pen);
+
         float xRR = xR - 0.5*env.width_car*sin_t;
         float yRR = yR + 0.5*env.width_car*cos_t;
         QLineF RR(
@@ -183,6 +256,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
             yRL + WHEEL_RADIUS*sin_t
         );
         painter.drawLine(map_into_window(RL, m, r));
+
         float sin_t_a = sin(env.car.theta+steering_actions[last_steering_action]);
         float cos_t_a = cos(env.car.theta+steering_actions[last_steering_action]);
         float xFR = xRR + (env.len_car-env.front_overhang-env.rear_overhang)*cos_t;
@@ -194,6 +268,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
             yFR + WHEEL_RADIUS*sin_t_a
         );
         painter.drawLine(map_into_window(FR, m, r));
+
         float xFL = xRL + (env.len_car-env.front_overhang-env.rear_overhang)*cos_t;
         float yFL = yRL + (env.len_car-env.front_overhang-env.rear_overhang)*sin_t;
         QLineF FL(
@@ -204,15 +279,16 @@ void MainWindow::paintEvent(QPaintEvent *event)
         );
         painter.drawLine(map_into_window(FL, m, r));
 
-        painter.setBrush(Qt::red);
-        painter.setPen(Qt::red);
+        // Wheel-axle dots — yellow for visibility on the red body
+        painter.setBrush(Qt::yellow);
+        painter.setPen(Qt::yellow);
         painter.drawEllipse(map_into_window(QPointF(xRR, yRR), m, r), 2, 2);
         painter.drawEllipse(map_into_window(QPointF(xRL, yRL), m, r), 2, 2);
         painter.drawEllipse(map_into_window(QPointF(xFR, yFR), m, r), 2, 2);
         painter.drawEllipse(map_into_window(QPointF(xFL, yFL), m, r), 2, 2);
-
     }
 
+    painter.restore();
 }
 
 

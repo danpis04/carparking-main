@@ -132,12 +132,25 @@ private slots:
 protected:
     /**
      * @brief Handles the paint event for custom drawing.
-     * 
+     *
      * This method is overridden to perform custom drawing on the main window.
-     * 
+     *
      * @param event The paint event that triggered this method.
      */
     void paintEvent(QPaintEvent *event) override;
+
+    /**
+     * @brief Handles window resize events to keep the right-side control panel
+     * anchored to the right edge and the status banner anchored to the bottom.
+     */
+    void resizeEvent(QResizeEvent *event) override;
+
+private:
+    /**
+     * @brief Repositions the right-column group boxes and the status banner
+     * based on the current window size.
+     */
+    void layoutControls();
 
 private:
     Ui::MainWindow *ui; ///< Pointer to the UI components of the main window.
