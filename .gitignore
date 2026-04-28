@@ -32,3 +32,4 @@ CLAUDE.md
 AGENTS.md
 .gitignore
 .github/skills/qt-manual-validation/SKILL.md
+.claude/settings.json

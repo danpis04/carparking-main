@@ -4,7 +4,7 @@
 
 An C++ project with Qt graphical interface to train and simulate autonomous car parking using **Q-learning**.  
 Developed entirely in C++ from scratch, including physics, learning, and UI. 
-This project is part of the [*Neural Networks and Deep Learning*](http://retis.sssup.it/~giorgio/courses/neural/nn.html) course by **Prof. G. C. Buttazzo**  
+This project is part of the [*Fundamentals of Neural Networks*] course by **Prof. G. C. Buttazzo**  
 
 ## Overview
 

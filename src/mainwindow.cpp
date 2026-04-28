@@ -345,10 +345,10 @@ void MainWindow::model_iteration() {
         //cout << "Reward, tdr: " << reward << ", " << tdr << endl;
         int i = iter/time_ratio;
         //cout << i << endl;
+        controller.er = controller.er_min + controller.er_ratio*(controller.er - controller.er_min);
+        controller.lr = controller.lr_min + controller.lr_ratio*(controller.lr - controller.lr_min);
         if(i % 1000 == 0) {
-            controller.er = controller.er_min + controller.er_ratio*(controller.er - controller.er_min);
-            controller.lr = controller.lr_min + controller.lr_ratio*(controller.lr - controller.lr_min);   
-            //cout << i << ", " << controller.er << endl; 
+            //cout << i << ", " << controller.er << endl;
         }
         avg_tdr = (i*avg_tdr+abs(tdr))/(i+1);
     }
@@ -387,6 +387,7 @@ void MainWindow::on_trainButton_clicked()
     for(int i=0; i<num_iter; ++i) {
         model_iteration();
         enviroment_iteration(animation_speed*msec*time_ratio);
+        iter += time_ratio;
         if((i+1)%LOG_FREQ==0) {
             cout << "{\"iteration\": \"" << i+1 << "\", \"hit\": \"" << hit_counter << "\", \"success\": \"" << success_counter << "\", \"success_ratio\": \""<< 100 * success_counter / (float)(success_counter+hit_counter) << '%' << "\", \"lr\": \""<< controller.lr << "\", \"er\": \"" << controller.er << "\", \"avg_tdr\": \"" << avg_tdr <<"\"}"<< endl;
             file << "{\"iteration\": \"" << i+1 << "\", \"hit\": \"" << hit_counter << "\", \"success\": \"" << success_counter << "\", \"success_ratio\": \""<< 100 * success_counter / (float)(success_counter+hit_counter) << '%' << "\", \"lr\": \""<< controller.lr << "\", \"er\": \"" << controller.er << "\", \"avg_tdr\": \"" << avg_tdr <<"\"}"<< endl;
