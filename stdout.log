@@ -1,46 +1,38 @@
 3763200
 1
 1
-Q-Table reset
-{"iteration": "1000000", "hit": "36931", "success": "6", "success_ratio": "0.0162439%", "lr": "0.87068", "er": "0.353583", "avg_tdr": "2.2742"}
-Trained 1000000
-{"iteration": "1000000", "hit": "0", "success": "0", "success_ratio": "nan%", "lr": "1", "er": "0.5", "avg_tdr": "0"}
-Trained 1000000
-{"iteration": "1000000", "hit": "38852", "success": "16", "success_ratio": "0.041165%", "lr": "0.87068", "er": "0.353583", "avg_tdr": "0.673245"}
-{"iteration": "2000000", "hit": "24828", "success": "7626", "success_ratio": "23.4979%", "lr": "0.7581", "er": "0.25005", "avg_tdr": "3.46623"}
-{"iteration": "3000000", "hit": "9505", "success": "22720", "success_ratio": "70.5043%", "lr": "0.660094", "er": "0.176841", "avg_tdr": "7.45882"}
-{"iteration": "4000000", "hit": "7656", "success": "29620", "success_ratio": "79.4613%", "lr": "0.574775", "er": "0.125075", "avg_tdr": "4.81472"}
-{"iteration": "5000000", "hit": "5650", "success": "35682", "success_ratio": "86.3302%", "lr": "0.5005", "er": "0.0884707", "avg_tdr": "3.52275"}
-{"iteration": "6000000", "hit": "3615", "success": "40361", "success_ratio": "91.7796%", "lr": "0.43584", "er": "0.0625875", "avg_tdr": "2.74332"}
-{"iteration": "7000000", "hit": "2378", "success": "42828", "success_ratio": "94.7396%", "lr": "0.37955", "er": "0.0442853", "avg_tdr": "2.16781"}
-{"iteration": "8000000", "hit": "1581", "success": "45497", "success_ratio": "96.6417%", "lr": "0.330547", "er": "0.0313438", "avg_tdr": "1.51085"}
-{"iteration": "9000000", "hit": "1231", "success": "46455", "success_ratio": "97.4185%", "lr": "0.287887", "er": "0.0221927", "avg_tdr": "1.31173"}
-{"iteration": "10000000", "hit": "820", "success": "47544", "success_ratio": "98.3045%", "lr": "0.25075", "er": "0.0157219", "avg_tdr": "1.13734"}
-Trained 10000000
-Trained 10000
-{"iteration": "1000000", "hit": "16098", "success": "9776", "success_ratio": "37.7831%", "lr": "0.87068", "er": "0.353583", "avg_tdr": "3.35089"}
-{"iteration": "2000000", "hit": "13542", "success": "18382", "success_ratio": "57.5805%", "lr": "0.7581", "er": "0.25005", "avg_tdr": "2.45986"}
-{"iteration": "3000000", "hit": "10367", "success": "27476", "success_ratio": "72.6052%", "lr": "0.660094", "er": "0.176841", "avg_tdr": "2.01115"}
-{"iteration": "4000000", "hit": "9045", "success": "33034", "success_ratio": "78.5047%", "lr": "0.574775", "er": "0.125075", "avg_tdr": "1.6898"}
-{"iteration": "5000000", "hit": "6105", "success": "39032", "success_ratio": "86.4745%", "lr": "0.5005", "er": "0.0884707", "avg_tdr": "1.40733"}
-{"iteration": "6000000", "hit": "4283", "success": "42979", "success_ratio": "90.9378%", "lr": "0.43584", "er": "0.0625875", "avg_tdr": "1.18544"}
-{"iteration": "7000000", "hit": "3075", "success": "46141", "success_ratio": "93.752%", "lr": "0.37955", "er": "0.0442853", "avg_tdr": "1.06423"}
-{"iteration": "8000000", "hit": "2018", "success": "48469", "success_ratio": "96.0029%", "lr": "0.330547", "er": "0.0313438", "avg_tdr": "0.943683"}
-{"iteration": "9000000", "hit": "1646", "success": "49759", "success_ratio": "96.798%", "lr": "0.287887", "er": "0.0221927", "avg_tdr": "0.821015"}
-{"iteration": "10000000", "hit": "1166", "success": "51360", "success_ratio": "97.7801%", "lr": "0.25075", "er": "0.0157219", "avg_tdr": "0.722176"}
+{"iteration": "1000000", "hit": "31810", "success": "3", "success_ratio": "0.00943011%", "lr": "0.435405", "er": "0.353583", "avg_tdr": "2.27303"}
+{"iteration": "2000000", "hit": "30686", "success": "9", "success_ratio": "0.0293207%", "lr": "0.379171", "er": "0.25005", "avg_tdr": "1.04351"}
+{"iteration": "3000000", "hit": "25221", "success": "16", "success_ratio": "0.063399%", "lr": "0.330217", "er": "0.176841", "avg_tdr": "0.61755"}
+{"iteration": "4000000", "hit": "20738", "success": "108", "success_ratio": "0.518085%", "lr": "0.2876", "er": "0.125075", "avg_tdr": "0.425571"}
+{"iteration": "5000000", "hit": "16871", "success": "767", "success_ratio": "4.34857%", "lr": "0.2505", "er": "0.0884707", "avg_tdr": "0.34556"}
+{"iteration": "6000000", "hit": "13112", "success": "3694", "success_ratio": "21.9802%", "lr": "0.218202", "er": "0.0625875", "avg_tdr": "0.42766"}
+{"iteration": "7000000", "hit": "9379", "success": "8711", "success_ratio": "48.1537%", "lr": "0.190086", "er": "0.0442853", "avg_tdr": "0.538008"}
+{"iteration": "8000000", "hit": "6453", "success": "16714", "success_ratio": "72.1457%", "lr": "0.165609", "er": "0.0313438", "avg_tdr": "0.65898"}
+{"iteration": "9000000", "hit": "3256", "success": "28616", "success_ratio": "89.7841%", "lr": "0.1443", "er": "0.0221927", "avg_tdr": "0.89374"}
+{"iteration": "10000000", "hit": "2222", "success": "32416", "success_ratio": "93.5851%", "lr": "0.12575", "er": "0.0157219", "avg_tdr": "0.890029"}
 Trained 10000000
 Q-Table reset
+{"iteration": "1000000", "hit": "31966", "success": "0", "success_ratio": "0%", "lr": "0.435405", "er": "0.353583", "avg_tdr": "0.206917"}
+{"iteration": "2000000", "hit": "30531", "success": "4", "success_ratio": "0.0130997%", "lr": "0.379171", "er": "0.25005", "avg_tdr": "0.172915"}
+{"iteration": "3000000", "hit": "25024", "success": "18", "success_ratio": "0.0718792%", "lr": "0.330217", "er": "0.176841", "avg_tdr": "0.142253"}
+{"iteration": "4000000", "hit": "20627", "success": "154", "success_ratio": "0.741062%", "lr": "0.2876", "er": "0.125075", "avg_tdr": "0.121949"}
+{"iteration": "5000000", "hit": "16600", "success": "1373", "success_ratio": "7.63924%", "lr": "0.2505", "er": "0.0884707", "avg_tdr": "0.123438"}
+{"iteration": "6000000", "hit": "12424", "success": "5624", "success_ratio": "31.1613%", "lr": "0.218202", "er": "0.0625875", "avg_tdr": "0.186782"}
+{"iteration": "7000000", "hit": "8662", "success": "11931", "success_ratio": "57.9372%", "lr": "0.190086", "er": "0.0442853", "avg_tdr": "0.312473"}
+{"iteration": "8000000", "hit": "5433", "success": "23059", "success_ratio": "80.9315%", "lr": "0.165609", "er": "0.0313438", "avg_tdr": "0.522128"}
+{"iteration": "9000000", "hit": "3444", "success": "31562", "success_ratio": "90.1617%", "lr": "0.1443", "er": "0.0221927", "avg_tdr": "0.620504"}
+{"iteration": "10000000", "hit": "2651", "success": "33499", "success_ratio": "92.6667%", "lr": "0.12575", "er": "0.0157219", "avg_tdr": "0.615854"}
+Trained 10000000
 Q-Table reset
-Q-Table reset
-Q-Table reset
-{"iteration": "1000000", "hit": "36925", "success": "3", "success_ratio": "0.00812392%", "lr": "0.87068", "er": "0.353583", "avg_tdr": "0.0986947"}
-{"iteration": "2000000", "hit": "35441", "success": "28", "success_ratio": "0.0789422%", "lr": "0.7581", "er": "0.25005", "avg_tdr": "0.0855673"}
-{"iteration": "3000000", "hit": "26521", "success": "3828", "success_ratio": "12.6133%", "lr": "0.660094", "er": "0.176841", "avg_tdr": "0.196679"}
-{"iteration": "4000000", "hit": "10463", "success": "22401", "success_ratio": "68.1627%", "lr": "0.574775", "er": "0.125075", "avg_tdr": "1.32754"}
-{"iteration": "5000000", "hit": "4072", "success": "33809", "success_ratio": "89.2505%", "lr": "0.5005", "er": "0.0884707", "avg_tdr": "1.1991"}
-{"iteration": "6000000", "hit": "2839", "success": "38422", "success_ratio": "93.1194%", "lr": "0.43584", "er": "0.0625875", "avg_tdr": "0.978594"}
-{"iteration": "7000000", "hit": "2056", "success": "41752", "success_ratio": "95.3068%", "lr": "0.37955", "er": "0.0442853", "avg_tdr": "0.835017"}
-{"iteration": "8000000", "hit": "1404", "success": "44195", "success_ratio": "96.921%", "lr": "0.330547", "er": "0.0313438", "avg_tdr": "0.703277"}
-{"iteration": "9000000", "hit": "872", "success": "45859", "success_ratio": "98.134%", "lr": "0.287887", "er": "0.0221927", "avg_tdr": "0.61212"}
-{"iteration": "10000000", "hit": "832", "success": "47210", "success_ratio": "98.2682%", "lr": "0.25075", "er": "0.0157219", "avg_tdr": "0.540897"}
+{"iteration": "1000000", "hit": "36358", "success": "3", "success_ratio": "0.0082506%", "lr": "0.87068", "er": "0.176806", "avg_tdr": "0.11722"}
+{"iteration": "2000000", "hit": "30321", "success": "9", "success_ratio": "0.0296736%", "lr": "0.7581", "er": "0.12505", "avg_tdr": "0.0930545"}
+{"iteration": "3000000", "hit": "24902", "success": "48", "success_ratio": "0.192385%", "lr": "0.660094", "er": "0.088453", "avg_tdr": "0.0787609"}
+{"iteration": "4000000", "hit": "18668", "success": "2784", "success_ratio": "12.9778%", "lr": "0.574775", "er": "0.062575", "avg_tdr": "0.0982625"}
+{"iteration": "5000000", "hit": "9447", "success": "15839", "success_ratio": "62.6394%", "lr": "0.5005", "er": "0.0442765", "avg_tdr": "0.481353"}
+{"iteration": "6000000", "hit": "2296", "success": "33647", "success_ratio": "93.6121%", "lr": "0.43584", "er": "0.0313375", "avg_tdr": "0.599781"}
+{"iteration": "7000000", "hit": "1120", "success": "37738", "success_ratio": "97.1177%", "lr": "0.37955", "er": "0.0221882", "avg_tdr": "0.881915"}
+{"iteration": "8000000", "hit": "804", "success": "39366", "success_ratio": "97.9985%", "lr": "0.330547", "er": "0.0157187", "avg_tdr": "0.786003"}
+{"iteration": "9000000", "hit": "556", "success": "40576", "success_ratio": "98.6483%", "lr": "0.287887", "er": "0.0111441", "avg_tdr": "0.71407"}
+{"iteration": "10000000", "hit": "389", "success": "41353", "success_ratio": "99.0681%", "lr": "0.25075", "er": "0.00790937", "avg_tdr": "0.592855"}
 Trained 10000000
