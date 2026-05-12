@@ -35,7 +35,7 @@
       #set text(size: 11pt, style: "italic")
       #set par(justify: true)
 
-      Autonomous parking is a complex task that requires an agent to learn how to control a car in a constrained environment. In this project, we implemented a simple 2D simulation of a car and trained a Q-learning agent to park it in a designated spot. The car's state is defined by its position and orientation while the action space consists of discrete steering angles and acceleration commands. We experimented with different reward functions and hyperparameters to optimize the learning process. The results show that the agent successfully learns to park the car in the target spot after sufficient training episodes, demonstrating the effectiveness of Q-learning in this context.
+      Autonomous parking is a complex task that requires an agent to learn how to control a car in a constrained environment. In this project, we implemented a simple 2D simulation of a car and trained a Q-learning agent to park it in a designated spot. The car's state is defined by its position and orientation while the action space consists of discrete steering angles and speed commands. We experimented with different reward functions and hyperparameters to optimize the learning process. The results show that the agent successfully learns to park the car in the target spot after sufficient training episodes, demonstrating the effectiveness of Q-learning in this context.
     ]
   ]
 ]
