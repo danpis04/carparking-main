@@ -64,7 +64,7 @@
 = Introduction
 The aim of this project is training a small Q-learning model to park a car in a designated spot. Here, the car is a simplified 2D model, designed as a rectangle with a front pair of rotating wheels, and a back pair of fixed wheels. The states of the car are defined by its position and orientation. The action space consists of discrete steering angles and speed commands. The environment is a simple parking lot with a designated parking spot. The agent receives rewards based on its ability to successfully park within it while avoiding collisions in as little time as possible.
 
-The choice of method is deliberately conservative. Tabular Q-learning is the simplest possible reinforcement-learning algorithm with provable convergence on finite Markov decision processes, and it serves as a transparent baseline against which any more sophisticated approach can be compared. The cost of this simplicity is paid in the discretization step: the continuous pose of the car must be projected onto a finite grid, and every design decision in #ref(<phys>) and #ref(<env>) is shaped by the trade-off between resolution and table size. The remainder of this paper is organized as follows. #ref(<phys>) describes the kinematic-bicycle simulator and the geometry of the parking lot. #ref(<env>) defines the discrete state and action spaces, the reward function, and the Q-learning update used by the agent. #ref(<train>) discusses how the simulator and the learner are integrated into a single Qt application, which hyperparameters are exposed, and how the Q-table is persisted. The final two sections summarize qualitative observations and possible extensions.
+Tabular Q-learning is the simplest possible reinforcement-learning algorithm with provable convergence on finite Markov decision processes. The cost of this simplicity is paid in the discretization step: the continuous pose of the car must be projected onto a finite grid, and every design decision in #ref(<phys>) and #ref(<env>) is shaped by the trade-off between resolution and table size. 
 
 = Physical Modeling <phys>
 The car's dynamics are modeled using a simplified kinematic bicycle model, which captures the essential behavior of a car while being computationally efficient. The speed is modeled istantaneously, meaning that the car can accelerate or decelerate to any speed within a single time step. The steering is also modeled as instantaneous, allowing for discrete changes in the steering angle. The fact that the wheels, specifically the front ones, are not on the edge of the car, but rather a few centimeters inwards, must be taken into account in the model to allow for the parking to be possible.
@@ -114,7 +114,7 @@ $ x' = x + Delta t thin v cos theta, quad y' = y + Delta t thin v sin theta, qua
 
     // heading arrow
     line((0, 0), (L_c/2 + 0.9, 0), stroke: 1pt, mark: (end: ">"))
-    content((L_c/2 + 1.25, 0.35), $theta$)
+    content((L_c/2 + 1, 0.50), $theta$)
 
     // wheelbase L (below)
     line((x_r, -w_c/2 - 0.7), (x_f, -w_c/2 - 0.7), mark: (start: ">", end: ">"), stroke: 0.5pt)
@@ -122,34 +122,36 @@ $ x' = x + Delta t thin v cos theta, quad y' = y + Delta t thin v sin theta, qua
 
     // overhangs (above)
     line((-L_c/2, w_c/2 + 0.5), (x_r, w_c/2 + 0.5), mark: (start: ">", end: ">"), stroke: 0.5pt)
-    content((-L_c/2 + o_r/2, w_c/2 + 0.85), $o_r$)
+    content((-L_c/2 + o_r/2, w_c/2 + 1), $o_r$)
     line((x_f, w_c/2 + 0.5), (L_c/2, w_c/2 + 0.5), mark: (start: ">", end: ">"), stroke: 0.5pt)
     content((x_f + o_f/2, w_c/2 + 0.85), $o_f$)
 
     // body width w_c (right)
     line((L_c/2 + 0.55, -w_c/2), (L_c/2 + 0.55, w_c/2), mark: (start: ">", end: ">"), stroke: 0.5pt)
-    content((L_c/2 + 0.95, 0), $w_c$)
+    content((L_c/2 + 1.5, 0), $w_c$)
 
     // ICR perpendicular to heading at rear axle
     let icr_y = 5
     line((x_r, 0), (x_r, icr_y), stroke: (paint: gray, dash: "dashed", thickness: 0.6pt))
     circle((x_r, icr_y), radius: 0.13, fill: green.lighten(60%), stroke: green.darken(20%) + 1pt)
     content((x_r - 1.3, icr_y), text(green.darken(20%), $(x_(c r), y_(c r))$))
-    content((x_r + 0.65, icr_y/2), $L slash tan delta$)
+    content((x_r + 0.65, icr_y/2 + 0.5), $L slash tan delta$)
 
     // swept arc alpha
-    arc((x_r, 0), start: -90deg, stop: -60deg, radius: icr_y, anchor: "origin", mode: "OPEN", stroke: (paint: orange, thickness: 1pt))
-    content((x_r + 1.9, 0.55), text(orange, $alpha$))
+    arc((x_r, icr_y), start: -90deg, stop: -40deg, radius: icr_y, anchor: "origin", mode: "OPEN", stroke: (paint: orange, thickness: 1pt))
+    content((x_r + 1.9, 0.75), text(orange, $alpha$))
   }),
   caption: [Kinematic bicycle model. The body of length $L_c$ and width $w_c$ has wheelbase $L = L_c - o_f - o_r$, with overhangs $o_f$ and $o_r$ at the front and rear. The rear axle $(x_r, y_r)$ lies at distance $L_c/2 - o_r$ behind the geometric centre $(x, y)$. For non-zero steering $delta$, the body rotates around the instantaneous centre of rotation $(x_(c r), y_(c r))$, perpendicular to the heading at signed distance $L slash tan delta$ from the rear axle; the swept arc over one timestep is $alpha$.],
 )
 
 == Linearized model
-A simpler integrator is also implemented (selected by the `APPROX_MOTION` flag in the configuration). It tracks a rear reference point $(tilde(x)_r, tilde(y)_r)$ taken at the midpoint of the rear bumper rather than at the rear axle (the overhang $o_r$ is ignored here, so this point is offset by $L_c/2$ instead of $L_c/2 - o_r$):
+A simpler integrator is also implemented, (selected by the `APPROX_MOTION` flag in the configuration), even though for the sake of this project using the complete bicycle model each iteration has proven sustainable. It tracks a rear reference point $(tilde(x)_r, tilde(y)_r)$ taken at the midpoint of the rear bumper rather than at the rear axle (the overhang $o_r$ is ignored here, so that this point is offset by $L_c/2$ instead of $L_c/2 - o_r$):
 $ vec(tilde(x)_r, tilde(y)_r) = vec(x, y) - L_c/2 vec(cos theta, sin theta). $
 This point is translated straight along the current heading and the heading is updated independently, dropping the curvature coupling:
 $ vec(tilde(x)_r ', tilde(y)_r ') = vec(tilde(x)_r, tilde(y)_r) + Delta t thin v vec(cos theta, sin theta), quad theta' = theta - (Delta t thin v sin delta) / L_c. $
-This trades geometric fidelity for speed: it replaces $tan delta$ with $sin delta$ and uses the full body length $L_c$ in place of the wheelbase $L$, so the predicted curvature is biased for large steering angles. The exact model is the default.
+This method trades geometric fidelity for speed: it replaces $tan delta$ with $sin delta$ and uses the full body length $L_c$ in place of the wheelbase $L$, so the predicted curvature is biased for large steering angles. 
+
+For this reason the exact model is used as default.
 
 == Body geometry and collisions
 The four corners $(x_i, y_i)$, $i = 1, dots, 4$, of the car rectangle are reconstructed independently from the pose, each as the body centre plus a half-length offset along the heading and a half-width offset perpendicular to it:
@@ -250,7 +252,7 @@ $ eta_t - eta_min approx (eta_max - eta_min) thin rho_eta^(t ), quad rho_eta = 2
 and analogously for $epsilon$. This schedule lets the agent explore aggressively early in training while gradually committing to the policy implied by the current Q-values, and prevents stale large-step updates from overwriting a good table once the policy has approximately converged.
 
 = Implementation <train>
-The full project is implemented as a single Qt 5/6 desktop application written in C++. The same binary handles training and visualization, and the user interface allows for switching between the two modes. There is no external machine-learning framework: the Q-table, the simulator, and the rendering pipeline are all hand-written in a few thousand lines of code.
+The full project is implemented as a single Qt 5/6 desktop application written in C++. The same binary handles training and visualization, and the user interface allows for switching between the two modes.
 
 == Tools
 Building requires `Qt` (modules `core`, `gui` and `widgets`) together with `qmake` and a `make`-compatible toolchain. From the project root the standard sequence is `qmake carparking.pro` to generate the Makefile, then `make` (or `mingw32-make` on Windows, `nmake` under MSVC) to compile, and finally `./bin/carparking` to run. Object files are emitted to `build/` and the executable to `bin/`, controlled by `OBJECTS_DIR` and `DESTDIR` in the project file.
@@ -273,7 +275,7 @@ _Headless training_, by contrast, once started, enters a tight `for` loop over m
 )
 
 == Hyperparameter
-All numerical parameters are externalized to `configuration/default.conf`, parsed once at construction time into a `map<string, string>`. Because the file is read only once, every change requires restarting the application.
+All numerical parameters are externalized to `configuration/default.conf`, parsed once at construction time into a `map<string, string>`. 
 
 The parameters fall into five groups:
 - _Car and lot geometry_: `LEN_CAR`, `WIDTH_CAR`, `FRONT_OVERHANG`, `REAR_OVERHANG`, `LEN_ENV`, `WIDTH_ENV`, `LEN_SLOT`, `WIDTH_SLOT`, `FREE_PARK`. These determine the rectangle in #ref(<phys>) and the polygon of the parking lot.
@@ -287,8 +289,8 @@ The Q-table itself is saved and stored as plain text files, with one row per sta
 = Experiments and results
 At the start of each run, the car position is always reset to a random initial position, and the heading is always reset to $-pi/2$,  keeping the initial-state distribution more narrow and predictable across runs. In this way the model is capable of achieving a very high accuracy score even with the tight discretizaions required.
 
-== Optimal Hyperparameters configuration found fot the project
-After exploring the parameter ranges described in #ref(<train>), the configuration shipped in `configuration/default.conf` emerged as a reliable working point for the parking task. With these values the agent reaches a per-window success ratio above 98% after roughly ten million model iterations, as documented in the baseline curve at the end of this section. #ref(<opt-conf>) reports the values used; they serve as the reference against which the two possible variants presented below are compared.
+== Optimal Hyperparameters configuration found for the project
+After exploring the parameter ranges described in #ref(<train>), the configuration shipped in `configuration/default.conf` emerged as a reliable working point for the parking task. With these values the agent reaches a per-window success ratio in training above 98% after roughly ten million model iterations, as documented in the baseline curve at the end of this section. #ref(<opt-conf>) reports the values used; they serve as the reference against which the two possible variants presented below are compared.
 
 #figure(
   table(
@@ -419,9 +421,9 @@ To better show this dependence, the following graph shows the learning curve und
   *Right:* `ER_MAX` reduced from $0.5$ to $0.25$, final success ratio $99.1%$.],
 )
 
-What we can observe from the left graph is that a reduction in the initial learning rate `Q_LR_MAX` has a significant negative impact on the convergence of the agent, rendering it much slower and less effective overall in achieving a high success ratio on the 10 milion iterations batch used for the project. On the other hand, from the right graph we see that the reduction of the initial exploration rate `ER_MAX` also slows down the convergence, even though it might seem to have positive overall effect since the final success ratio is higher than the one achieved with the optimal configuration, but this isn't the result we are looking for, since the higher final accuracy is simply a consequence of a lower final exploration rate and in evaluation mode they would both achieve 100% accuracy, so the optimal configuration is still the one with `ER_MAX` at 0.5 that start being very accurate at 4 million iterations instead of 5 while achieving the same final result.
+What we can observe from the left graph is that a reduction in the initial learning rate `Q_LR_MAX` has a significant negative impact on the convergence of the agent, rendering it much slower and less effective overall in achieving a high success ratio on the 10 milion iterations batch used for the project. On the other hand, from the right graph we see that the reduction of the initial exploration rate `ER_MAX` also slows down the convergence, even though it might seem to have positive overall effect since the final success ratio is higher than the one achieved with the optimal configuration, but this isn't the result we are looking for, since the higher final accuracy is simply a consequence of a lower final exploration rate and in evaluation mode they would both achieve near 100% accuracy, so the optimal configuration is still the one with `ER_MAX` at 0.5 that starts being very usefully accurate at 4 million iterations instead of 5 while achieving the same final result.
 
 = Conclusions
-This project shows that a standard tabular Q-learning agent, with a properly discretized state space, can learn a parking policy for a kinematic-bicycle car in a constrained 2D lot, while implementing the learner, the simulator, and the visualization in a single Qt application of a few thousand lines. The project also shows the ergonomic ceiling of tabular methods: the three discretization axes contribute multiplicatively to the state count, significally increasing the iterations required to train the network and the per iteration cost. The fixed reset orientation of $-pi/2$ also reveals itself to be necessary, as it narrows the training distribution and allows for the model to achieve significant accuracy in a small time. 
+This project shows that a standard tabular Q-learning agent, with a properly discretized state space, can learn a parking policy for a kinematic-bicycle car in a constrained 2D lot, while implementing the learner, the simulator, and the visualization in a single Qt application of a few thousand lines. This project also shows the ergonomic ceiling of tabular methods: the three discretization axes contribute multiplicatively to the state count, significally increasing the iterations required to train the network and the per iteration cost. The fixed reset orientation of $-pi/2$ also reveals itself to be necessary, as it narrows the training distribution and allows for the model to achieve significant accuracy in a small time. 
 
 Nevertheless this project proves that an application of Q-learning faithful to the classic formulation can be successful on a non-trivial control problem such as this one and can be competitive with more sophisticated approaches, once the limitations of operating in a discretized state and action space are taken into account.  
