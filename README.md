@@ -27,7 +27,7 @@ This project simulates a car learning to park autonomously using a **Q-learning*
 1. **Clone the repository**:
 
     ```sh
-    git clone https://github.com/gcairone/carparking.git
+    git clone https://github.com/danpis04/carparking.git
     cd carparking
     ```
 
